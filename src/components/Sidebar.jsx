@@ -36,6 +36,7 @@ const menuItems = [
     subMenu: [
       { name: 'All CM', path: '/users' },
       { name: 'Add CM', path: '/users/add' },
+      
     ],
   },
   {
