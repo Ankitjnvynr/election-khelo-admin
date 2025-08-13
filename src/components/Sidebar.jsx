@@ -34,9 +34,9 @@ const menuItems = [
     name: 'CM List',
     icon: <LuUserCheck />,
     subMenu: [
-      { name: 'All CM', path: '/users' },
-      { name: 'Add CM', path: '/users/add' },
-      
+      { name: 'All CM', path: '/cm' },
+      { name: 'Add CM', path: '/cm/add' },
+
     ],
   },
   {
