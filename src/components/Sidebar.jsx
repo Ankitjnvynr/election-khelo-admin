@@ -26,8 +26,8 @@ const menuItems = [
     name: 'Questions',
     icon: <CiBookmarkCheck />,
     subMenu: [
-      { name: 'All Questions', path: '/users' },
-      { name: 'Add Question', path: '/users/add' },
+      { name: 'All Questions', path: '/questions' },
+      { name: 'Add Question', path: '/question/add' },
     ],
   },
   {

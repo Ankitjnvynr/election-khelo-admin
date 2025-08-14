@@ -47,7 +47,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
             <div className="flex-1 pr-2">
                 <Topbar />
-                <main className="p-6 mt-16  w-full">{children}</main>
+                <main className="p-6 mt-16  w-full  h-[87vh] overflow-y-auto">{children}</main>
             </div>
         </div>
     )

@@ -34,7 +34,7 @@ const Pagination = ({
   }
 
   return (
-    <div className="flex items-center justify-between border-t border-white/10 px-4 py-3 sm:px-6">
+    <div className=" text-gray-800 flex items-center justify-between border-t border-white/10 px-4 py-3 sm:px-6">
       {/* Mobile Navigation */}
       <div className="flex flex-1 justify-between sm:hidden">
         <Link
@@ -54,7 +54,7 @@ const Pagination = ({
       {/* Desktop Navigation */}
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-gray-600">
             Showing{' '}
             <span className="font-medium">
               {(currentPage - 1) * itemsPerPage + 1}

@@ -5,11 +5,14 @@ import React, { useEffect, useState } from 'react'
 import Pagination from '@/components/utils/Pagination'
 import CmList from '@/components/CmList'
 import { config } from '@/conf/config'
+import Loading from '@/components/utils/Loading'
 
 const page = () => {
     const [cmlist, setCmList] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
 
     const getCmList = async () => {
+        setIsLoading(true)
         try {
             const response = await fetch(`${config.apiBaseUrl}/api/v1/cm`, {
                 method: 'GET',
@@ -24,15 +27,18 @@ const page = () => {
                 const data = await response.json()
                 console.log('CM List fetched successfully:', data)
                 setCmList(data.data) // Assuming the data is in data.data
+                setIsLoading(false)
             } else {
                 console.error('Failed to fetch CM list:', response.statusText)
                 throw new Error('Failed to fetch CM list')
+                setIsLoading(false)
             }
 
         }
 
         catch (error) {
             console.error('Error fetching CM list:', error)
+            setIsLoading(false)
         }
     }
 
@@ -43,8 +49,29 @@ const page = () => {
 
     return (
         <>
+            {
+                isLoading ? <Loading /> : null
+            }
+            {
+                !isLoading && cmlist.length === 0 ? (
+                    <div className="text-center p-4">
+                        <p className="text-gray-500">No Chief Ministers found.</p>
+                    </div>
+                ) : null
 
-            <CmList data={cmlist} getCmList={getCmList} />
+
+            }
+            {
+                !isLoading && cmlist.length > 0 ? (
+
+                    <CmList data={cmlist} getCmList={getCmList} />
+
+
+                ) : null
+            }
+
+
+
 
         </>
     )
