@@ -1,19 +1,24 @@
 import { useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { config } from "@/conf/config"; // Update as needed
+import QuestionForm from '@/components/QuestionForm'
 
-export default function QuestionsList({ data = [], onRefresh = () => {} }) {
+export default function QuestionsList({ data = [], onRefresh = () => { } ,getQuestions }) {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleDelete = async () => {
     if (!selectedQuestion?._id) return;
 
     setLoading(true);
     setError(null);
+
 
     try {
       const response = await fetch(
@@ -33,6 +38,7 @@ export default function QuestionsList({ data = [], onRefresh = () => {} }) {
       setShowDeleteModal(false);
       setSelectedQuestion(null);
       onRefresh();
+      getQuestions()
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -83,11 +89,10 @@ export default function QuestionsList({ data = [], onRefresh = () => {} }) {
                   return (
                     <div
                       key={idx}
-                      className={`px-4 py-1 border rounded-md ${
-                        isCorrect
-                          ? "bg-green-100 border-green-500 text-green-800 font-semibold"
-                          : "bg-gray-50 border-gray-300 text-gray-700"
-                      }`}
+                      className={`px-4 py-1 border rounded-md ${isCorrect
+                        ? "bg-green-100 border-green-500 text-green-800 font-semibold"
+                        : "bg-gray-50 border-gray-300 text-gray-700"
+                        }`}
                     >
                       <b>{String.fromCharCode(65 + idx)}. </b> { } {option}
                     </div>
@@ -132,9 +137,8 @@ export default function QuestionsList({ data = [], onRefresh = () => {} }) {
               </button>
               <button
                 onClick={handleDelete}
-                className={`px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 disabled={loading}
               >
                 {loading ? "Deleting..." : "Yes, Delete"}
@@ -147,34 +151,61 @@ export default function QuestionsList({ data = [], onRefresh = () => {} }) {
       {/* Edit Modal Placeholder */}
       {showEditModal && selectedQuestion && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-xl p-6">
-            <h2 className="text-lg font-semibold mb-4 text-blue-600">
-              Edit Question
-            </h2>
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6">
 
-            <p className="text-gray-600 mb-4">
-              Editing:{" "}
-              <strong className="text-gray-800">
-                {selectedQuestion.question_text}
-              </strong>
-            </p>
+
+
 
             {/* Replace this with your actual edit form */}
             <div className="text-sm text-gray-500 italic">
-              Edit form placeholder. Integrate your edit form here...
-            </div>
+              <QuestionForm
+                isLoading={isLoading}
+                initialData={selectedQuestion}
+                onSubmit={async (data) => {
+                  // Handle question update logic here
+                  console.log("Updated data:", data);
+                  setIsLoading(true);
+                  try {
+                    const response = await fetch(`${config.apiBaseUrl}/api/v1/questions/${selectedQuestion?._id}`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+                      },
+                      body: JSON.stringify(data),
+                    });
 
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={() => {
+                    if (response.ok) {
+                      const result = await response.json();
+                      console.log('Question created successfully:', result);
+                      setSuccessMessage('Question Updated successfully!');
+                      setIsLoading(false);
+                      setErrorMessage('');
+                      setShowEditModal(false);
+                      setSelectedQuestion(null);
+                      getQuestions()
+
+                    } else {
+                      setIsLoading(false);
+                      throw new Error('Failed to update question');
+                    }
+                  } catch (error) {
+                    setIsLoading(false);
+                    console.error('Error creating question:', error);
+                    setErrorMessage(error.message || 'Something went wrong');
+                    setSuccessMessage('');
+                  }
+
+                }}
+                onCancel={() => {
                   setShowEditModal(false);
                   setSelectedQuestion(null);
                 }}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded"
-              >
-                Close
-              </button>
+
+              />
             </div>
+
+
           </div>
         </div>
       )}

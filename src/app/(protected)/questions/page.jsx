@@ -4,6 +4,7 @@ import { config } from '@/conf/config'
 import Loading from '@/components/utils/Loading'
 import QuestionsList from '@/components/QuestionsList'
 import Pagination from '@/components/utils/Pagination'
+import { LuRefreshCw } from 'react-icons/lu'
 
 const page = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -67,11 +68,11 @@ const page = () => {
                     type='text'
                     placeholder='Search ...'
                 />
-                
+                <button className='cursor-pointer text-2xl' onClick={getQuestions}><LuRefreshCw /></button>
             </form>
 
             {
-                isLoading ? <Loading /> : ( <QuestionsList data={questions.questions} />)
+                isLoading ? <Loading /> : ( <QuestionsList data={questions.questions} getQuestions={getQuestions} />)
             }
 
            
