@@ -51,14 +51,12 @@ const page = () => {
         await getQuestions(); // Refetch with current search filter
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = async (e) => {
         setFilters({ ...filters, search: e.target.value });
+        await getQuestions(); // Refetch with updated search filter
     };
 
-    if (isLoading) {
-        return <Loading />;
-    }
-
+    
     return (
         <div>
             <form onSubmit={handleSearch} className='flex justify-between gap-5'>
@@ -69,12 +67,14 @@ const page = () => {
                     type='text'
                     placeholder='Search ...'
                 />
-                <span className='text-gray-500 text-sm font-bold'>
-                    Total Questions: {questions.questions?.length || 0}
-                </span>
+                
             </form>
 
-            <QuestionsList data={questions.questions} />
+            {
+                isLoading ? <Loading /> : ( <QuestionsList data={questions.questions} />)
+            }
+
+           
 
             <Pagination
                 basePath='/questions'
