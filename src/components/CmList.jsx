@@ -1,13 +1,22 @@
 import { useState } from "react"
 import { FaEdit, FaTrashAlt } from "react-icons/fa"
-import {config} from "@/conf/config" // Adjust this import to your config path
+import { config } from "@/conf/config" // Adjust this import to your config path
 
-export default function CmList({ data = [], getCmList, onRefresh = () => {getCmList()} }) {
+export default function CmList({ data = [], getCmList, onRefresh = () => { getCmList() } }) {
   const [selectedCm, setSelectedCm] = useState(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [editForm, setEditForm] = useState({
+    name: "",
+    party: "",
+    age: "",
+    gender: "",
+    is_current: false,
+    term_start: "",
+    term_end: ""
+  })
 
   const handleDelete = async () => {
     if (!selectedCm?._id) return
@@ -29,7 +38,52 @@ export default function CmList({ data = [], getCmList, onRefresh = () => {getCmL
 
       setShowDeleteModal(false)
       setSelectedCm(null)
-      onRefresh() // Refresh list from parent
+      onRefresh()
+      getCmList()
+    } catch (err) {
+      setError(err.message || "Something went wrong.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEditOpen = (cm) => {
+    setSelectedCm(cm)
+    setEditForm({
+      name: cm.name || "",
+      party: cm.party || "",
+      state: cm.state || "",
+      age: cm.age || "",
+      gender: cm.gender || "",
+      is_current: cm.is_current || false,
+      term_start: cm.term_start ? cm.term_start.split("T")[0] : "",
+      term_end: cm.term_end ? cm.term_end.split("T")[0] : ""
+    })
+    setShowEditModal(true)
+  }
+
+  const handleUpdate = async () => {
+    if (!selectedCm?._id) return
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/api/v1/cm/${selectedCm._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+        },
+        body: JSON.stringify(editForm),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to update the Chief Minister.")
+      }
+
+      setShowEditModal(false)
+      setSelectedCm(null)
+      onRefresh()
       getCmList()
     } catch (err) {
       setError(err.message || "Something went wrong.")
@@ -60,8 +114,8 @@ export default function CmList({ data = [], getCmList, onRefresh = () => {getCmL
               <td className="px-2 py-1">{cm.name}</td>
               <td className="px-2 py-1">{cm.party}</td>
               <td className="px-2 py-1">
-                {cm.term_start ? new Date(cm.term_start).getFullYear() : '-'} →{' '}
-                {cm.term_end ? new Date(cm.term_end).getFullYear() : cm.is_current ? 'Present' : '-'}
+                {cm.term_start ? new Date(cm.term_start).getFullYear() : '-'} →{" "}
+                {cm.term_end ? new Date(cm.term_end).getFullYear() : cm.is_current ? "Present" : "-"}
               </td>
               <td className="px-2 py-1">
                 {cm.is_current ? (
@@ -74,10 +128,7 @@ export default function CmList({ data = [], getCmList, onRefresh = () => {getCmL
               <td className="px-2 py-1 capitalize">{cm.gender}</td>
               <td className="px-2 py-1 capitalize">
                 <button
-                  onClick={() => {
-                    setSelectedCm(cm)
-                    setShowEditModal(true)
-                  }}
+                  onClick={() => handleEditOpen(cm)}
                   className="border-none outline-none cursor-pointer text-xl"
                 >
                   <FaEdit className="text-green-800" />
@@ -130,30 +181,96 @@ export default function CmList({ data = [], getCmList, onRefresh = () => {getCmL
         </div>
       )}
 
-      {/* Edit Modal (Placeholder) */}
+      {/* Edit Modal */}
       {showEditModal && selectedCm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-xl p-6">
             <h2 className="text-lg font-semibold mb-4 text-blue-600">Edit Chief Minister</h2>
 
-            <p className="text-gray-600 mb-4">
-              Editing: <strong>{selectedCm.name}</strong>
-            </p>
-
-            {/* Replace below with actual EditForm, or reuse AddCmForm in "edit mode" */}
-            <div className="text-sm text-gray-500 italic">
-              Edit form placeholder. Integrate your edit form here...
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                placeholder="Name"
+                className="w-full border p-2 rounded"
+              />
+              <input
+                type="text"
+                value={editForm.party}
+                onChange={(e) => setEditForm({ ...editForm, party: e.target.value })}
+                placeholder="Party"
+                className="w-full border p-2 rounded"
+              />
+              <input
+                type="text"
+                value={editForm.state}
+                onChange={(e) => setEditForm({ ...editForm, state: e.target.value })}
+                placeholder="State"
+                className="w-full border p-2 rounded"
+              />
+              <input
+                type="number"
+                value={editForm.age}
+                onChange={(e) => setEditForm({ ...editForm, age: e.target.value })}
+                placeholder="Age"
+                className="w-full border p-2 rounded"
+              />
+              <select
+                value={editForm.gender}
+                onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                className="w-full border p-2 rounded"
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={editForm.is_current}
+                  onChange={(e) => setEditForm({ ...editForm, is_current: e.target.checked })}
+                />
+                <label>Is Current CM</label>
+              </div>
+              <input
+                type="date"
+                value={editForm.term_start}
+                onChange={(e) => setEditForm({ ...editForm, term_start: e.target.value })}
+                className="w-full border p-2 rounded"
+              />
+              <input
+                type="date"
+                value={editForm.term_end}
+                onChange={(e) => setEditForm({ ...editForm, term_end: e.target.value })}
+                className="w-full border p-2 rounded"
+              />
             </div>
 
-            <div className="flex justify-end mt-6">
+            {error && (
+              <div className="text-sm text-red-600 mt-3">
+                {error}
+              </div>
+            )}
+
+            <div className="flex justify-end mt-6 space-x-3">
               <button
                 onClick={() => {
                   setShowEditModal(false)
                   setSelectedCm(null)
                 }}
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded"
+                disabled={loading}
               >
-                Close
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                className={`px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={loading}
+              >
+                {loading ? "Updating..." : "Save Changes"}
               </button>
             </div>
           </div>
