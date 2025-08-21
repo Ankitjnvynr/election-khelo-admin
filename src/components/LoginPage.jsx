@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { config } from '@/conf/config';
+import { config } from '../conf/config';
 import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
@@ -16,11 +16,12 @@ const LoginPage = () => {
     };
 
     const handleSubmit = async (e) => {
+        setIsLoading(true)
         e.preventDefault();
         // Handle login logic here (e.g., API call)
         console.log('Logging in with:', formData,config);
         try {
-            const response = await fetch(`${config.apiBaseUrl}/api/v1/users/login`, {
+            const response = await fetch(`${config.apiBaseUrl}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,13 +37,14 @@ const LoginPage = () => {
                 const data = await response.json();
                 console.log('Login successful:', data);
                 // Set token in cookies or local storage
-                document.cookie = `token=${data.token}; path=/; max-age=3600`;
-                localStorage.setItem("accessToken", data.data.accessToken);
-                localStorage.setItem("refreshToken", data.data.refreshToken);
+                localStorage.setItem("accessToken", data.access_token);
+                localStorage.setItem("refreshToken", data.refresh_token);
+                // const user = JSON.stringify()
+                localStorage.setItem("user",JSON.stringify(data.user))
+                // console.log(data.user)
 
                 // Redirect or update state as needed
-                router.push('/'); 
-                setIsLoading(false);
+                router.push('/admin'); 
             } else {
                 console.error('Login failed:', response.statusText);
                 setError('Login failed. Please check your credentials.');
@@ -61,7 +63,7 @@ const LoginPage = () => {
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
             <div className="bg-white shadow-lg rounded-lg max-w-md w-full p-8">
-                <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Election Khelo Admin</h2>
+                {/* <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Events</h2> */}
                 <h2 className="text-3xl font-bold text-center text-gray-700 mb-2">Welcome Back</h2>
                 <p className="text-center text-gray-500 mb-8">Login to your account</p>
 
@@ -69,13 +71,13 @@ const LoginPage = () => {
                     <div>
                         <label htmlFor="email" className="block text-gray-700 font-medium mb-1">Email or Username</label>
                         <input
-                            type="email"
+                            type="text"
                             name="email"
                             id="email"
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-300 text-gray-800 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -88,7 +90,7 @@ const LoginPage = () => {
                             value={formData.password}
                             onChange={handleChange}
                             required
-                            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full border border-gray-300 text-gray-800 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -111,7 +113,7 @@ const LoginPage = () => {
                         isLoading ?
                             (<button
                                 type="disabled"
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition"
+                                className="w-full bg-blue-600 cursor-progress hover:bg-blue-700 text-white py-2 px-4 rounded-md transition"
                             >
                                 Please wait...
                             </button>) :
@@ -119,7 +121,7 @@ const LoginPage = () => {
 
                                 <button
                                     type="submit"
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition"
+                                    className="w-full  bg-blue-600 cursor-pointer hover:bg-blue-700 text-white py-2 px-4 rounded-md transition"
                                 >
                                     Sign In
                                 </button>
