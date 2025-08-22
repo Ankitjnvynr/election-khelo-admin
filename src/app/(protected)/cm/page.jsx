@@ -14,7 +14,7 @@ const page = () => {
     const getCmList = async () => {
         setIsLoading(true)
         try {
-            const response = await fetch(`${config.apiBaseUrl}/api/v1/cm`, {
+            const response = await fetch(`${config.apiBaseUrl}/cm`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

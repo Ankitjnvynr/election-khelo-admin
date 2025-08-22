@@ -36,7 +36,7 @@ export default function AddCmForm({ onSubmit }) {
         setSuccessMessage(null)
 
         try {
-            const response = await fetch(`${config.apiBaseUrl}/api/v1/cm/create`, {
+            const response = await fetch(`${config.apiBaseUrl}/cm/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

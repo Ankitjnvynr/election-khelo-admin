@@ -18,10 +18,8 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         setIsLoading(true)
         e.preventDefault();
-        // Handle login logic here (e.g., API call)
-        console.log('Logging in with:', formData,config);
         try {
-            const response = await fetch(`${config.apiBaseUrl}/auth/login`, {
+            const response = await fetch(`${config.apiBaseUrl}/users/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -37,14 +35,15 @@ const LoginPage = () => {
                 const data = await response.json();
                 console.log('Login successful:', data);
                 // Set token in cookies or local storage
-                localStorage.setItem("accessToken", data.access_token);
-                localStorage.setItem("refreshToken", data.refresh_token);
+                localStorage.setItem("accessToken", data.data.accessToken);
+                localStorage.setItem("refreshToken", data.data.refreshToken);
                 // const user = JSON.stringify()
-                localStorage.setItem("user",JSON.stringify(data.user))
+                localStorage.setItem("user",JSON.stringify(data.data.user))
                 // console.log(data.user)
 
                 // Redirect or update state as needed
-                router.push('/admin'); 
+                router.push('/'); 
+                setIsLoading(false);
             } else {
                 console.error('Login failed:', response.statusText);
                 setError('Login failed. Please check your credentials.');

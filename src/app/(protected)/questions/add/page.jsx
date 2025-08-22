@@ -12,7 +12,7 @@ const page = () => {
     const createQuestion = async (data) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${config.apiBaseUrl}/api/v1/questions/create`, {
+            const response = await fetch(`${config.apiBaseUrl}/questions/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

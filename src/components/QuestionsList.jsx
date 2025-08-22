@@ -22,7 +22,7 @@ export default function QuestionsList({ data = [], onRefresh = () => { } ,getQue
 
     try {
       const response = await fetch(
-        `${config.apiBaseUrl}/api/v1/questions/${selectedQuestion._id}`,
+        `${config.apiBaseUrl}/questions/${selectedQuestion._id}`,
         {
           method: "DELETE",
           headers: {
@@ -166,7 +166,7 @@ export default function QuestionsList({ data = [], onRefresh = () => { } ,getQue
                   console.log("Updated data:", data);
                   setIsLoading(true);
                   try {
-                    const response = await fetch(`${config.apiBaseUrl}/api/v1/questions/${selectedQuestion?._id}`, {
+                    const response = await fetch(`${config.apiBaseUrl}/questions/${selectedQuestion?._id}`, {
                       method: 'PUT',
                       headers: {
                         'Content-Type': 'application/json',

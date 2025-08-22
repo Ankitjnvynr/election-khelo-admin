@@ -25,7 +25,7 @@ export default function CmList({ data = [], getCmList, onRefresh = () => { getCm
     setError(null)
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/api/v1/cm/${selectedCm._id}`, {
+      const response = await fetch(`${config.apiBaseUrl}/cm/${selectedCm._id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
@@ -68,7 +68,7 @@ export default function CmList({ data = [], getCmList, onRefresh = () => { getCm
     setError(null)
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/api/v1/cm/${selectedCm._id}`, {
+      const response = await fetch(`${config.apiBaseUrl}/cm/${selectedCm._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

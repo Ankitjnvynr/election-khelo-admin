@@ -17,7 +17,7 @@ const page = () => {
     const getQuestions = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${config.apiBaseUrl}/api/v1/questions/all?search=${filters.search}`, {
+            const response = await fetch(`${config.apiBaseUrl}/questions/all?search=${filters.search}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

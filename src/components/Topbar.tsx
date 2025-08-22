@@ -5,7 +5,7 @@ import { LogOut, Settings, User } from "lucide-react"
 
 const Topbar = () => {
   const router = useRouter()
-  const [user, setUser] = useState<{ id: number; name: string; email: string; avatar: string | null; role: string } | null>(null)
+  const [user, setUser] = useState<{ id: number; fullName: string; email: string; avatar: string | null; role: string } | null>(null)
   const [open, setOpen] = useState(false)
   const [confirmLogout, setConfirmLogout] = useState(false)
 
@@ -49,7 +49,7 @@ const Topbar = () => {
         {open && (
           <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-2 animate-fade-in">
             <div className="px-4 py-2 border-b">
-              <p className="text-sm font-medium text-gray-800">{user?.name}</p>
+              <p className="text-sm font-medium text-gray-800">{user?.fullName}</p>
               <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
             </div>
             <button
